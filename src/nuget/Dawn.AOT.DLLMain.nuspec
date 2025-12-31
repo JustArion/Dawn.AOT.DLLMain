@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Dawn.AOT.DLLMain</id>
+        <title>Dawn AOT DLLMain</title>
+        <version>1.0.0</version>
+        <description>Removes the limitations placed on DllMain from .NET 10+</description>
+        <authors>arion</authors>
+        <owners>arion</owners>
+
+        <license type="expression">MIT</license>
+        <repository type="git" url="https://github.com/JustArion/Dawn.AOT.DLLMain.git"/>
+        <tags>aot;dllmain;clr</tags>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <language>en-US</language>
+    </metadata>
+
+    <files>
+        <file src="Dawn.AOT.DLLMain.targets" target="build\" />
+    </files>
+</package>
