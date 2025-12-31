@@ -44,7 +44,8 @@ class Build : NukeBuild
     
     
     // Paths
-    readonly AbsolutePath NugetDirectory = RootDirectory / "nuget";
+    AbsolutePath NugetDirectory { get => field / "nuget"; } = RootDirectory / "src";
+
     AbsolutePath PackagesDirectory => NugetDirectory / "packages";
 
 }

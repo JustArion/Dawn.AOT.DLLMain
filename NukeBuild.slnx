@@ -1,0 +1,12 @@
+﻿<Solution>
+  <Folder Name="/Nuget/">
+    <File Path="src/nuget/Dawn.AOT.DLLMain.nuspec" />
+    <File Path="src/nuget/Dawn.AOT.DLLMain.targets" />
+  </Folder>
+  <Folder Name="/Nuke/">
+    <Project Path="src/build/_build.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="src/tests/TestTarget/TestTarget.csproj" />
+  </Folder>
+</Solution>
