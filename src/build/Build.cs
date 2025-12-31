@@ -1,6 +1,9 @@
-[GitHubActions("pack", GitHubActionsImage.UbuntuLatest, 
-    InvokedTargets = [nameof(Test), nameof(Pack)],
+using Nuke.Common.Git;
+
+[GitHubActions("pack", GitHubActionsImage.WindowsLatest, 
+    InvokedTargets = [nameof(Pack)],
     AutoGenerate = true,
+    PublishArtifacts = true,
     On = 
     [
         GitHubActionsTrigger.WorkflowDispatch, 
@@ -8,13 +11,16 @@
     ])]
 class Build : NukeBuild
 {
+    [GitRepository]
+    readonly GitRepository GitRepository;
+    
     [Solution(GenerateProjects = true)] 
     readonly Solution Solution;
     
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
     
-    public static int Main () => Execute<Build>(x => x.Test, x => x.Pack);
+    public static int Main () => Execute<Build>(x => x.Pack);
 
     Target Clean => _ => _
         .Executes(() =>
@@ -23,6 +29,7 @@ class Build : NukeBuild
         });
 
     Target Pack => _ => _
+        .DependsOn(Test)
         .Produces(PackagesDirectory / "*.nupkg")
         .Executes(() =>
         {
@@ -33,6 +40,7 @@ class Build : NukeBuild
         });
 
     Target Test => _ => _
+        .OnlyWhenStatic(()=> IsWin)
         .Executes(() =>
         {
             DotNetTasks.DotNetPublish(options => options
