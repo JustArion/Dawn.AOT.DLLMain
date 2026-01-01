@@ -1,4 +1,5 @@
 {
   "$schema": "build.schema.json",
-  "Solution": "NukeBuild.slnx"
+  "Solution": "NukeBuild.slnx",
+  "GithubNugetPAT": "v1:wX7OoXgV5s5grQHFvkoTHZwOI+GH+LP/9GWoDbUL/YigBVQ0V5qFPG2mJvjZrF47"
 }

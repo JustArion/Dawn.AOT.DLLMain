@@ -3,7 +3,8 @@
     <metadata>
         <id>Dawn.AOT.DLLMain</id>
         <title>Dawn AOT DLLMain</title>
-        <version>1.0.0</version>
+        <!-- Nuke will replace this -->
+        <version>0.0.0</version>
         <description>Removes the limitations placed on DllMain from .NET 10+</description>
         <authors>arion</authors>
         <owners>arion</owners>

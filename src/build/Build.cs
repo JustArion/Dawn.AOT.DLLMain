@@ -1,6 +1,15 @@
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq;
 using Nuke.Common.Git;
+using Nuke.Common.IO;
+using Nuke.Common.Tools.GitHub;
+using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.NuGet.NuGetTasks;
 
-[GitHubActions("pack", GitHubActionsImage.WindowsLatest, 
+[
+    ShutdownDotNetAfterServerBuild,
+    GitHubActions("pack", GitHubActionsImage.WindowsLatest, 
     InvokedTargets = [nameof(Pack)],
     AutoGenerate = true,
     PublishArtifacts = true,
@@ -8,7 +17,15 @@ using Nuke.Common.Git;
     [
         GitHubActionsTrigger.WorkflowDispatch, 
         GitHubActionsTrigger.PullRequest
-    ])]
+    ]),
+    GitHubActions("deploy", GitHubActionsImage.WindowsLatest,
+    InvokedTargets = [nameof(Publish)],
+    AutoGenerate = true,
+    PublishArtifacts = true,
+    ReadPermissions = [GitHubActionsPermissions.Contents],
+    WritePermissions = [GitHubActionsPermissions.Packages],
+    OnPushTags = ["v*"])
+]
 class Build : NukeBuild
 {
     [GitRepository]
@@ -25,30 +42,69 @@ class Build : NukeBuild
     Target Clean => _ => _
         .Executes(() =>
         {
-            PackagesDirectory.DeleteDirectory();
+            PackagesDirectory.CreateOrCleanDirectory();
         });
 
+    [Parameter] 
+    string Version;
+    
     Target Pack => _ => _
         .DependsOn(Test)
         .Produces(PackagesDirectory / "*.nupkg")
         .Executes(() =>
         {
-
-            NuGetTasks.NuGetPack(options => options
+            var version = Version
+                          ?? GitRepository.Tags?.FirstOrDefault(t => t != null && t.StartsWith('v'))?.TrimStart('v');
+            
+            if (version == null)
+                Assert.Fail("Could not find a version specified for this release");
+            
+            return NuGetPack(options => options
+                .SetVersion(version)
                 .SetProcessWorkingDirectory(NugetDirectory)
                 .SetOutputDirectory(PackagesDirectory));
         });
 
     Target Test => _ => _
         .OnlyWhenStatic(()=> IsWin)
+        .Executes(() => 
+            DotNetPublish(options => options
+            .SetProject(Solution.Tests.TestTarget)
+            .SetRuntime(DotNetRuntimeIdentifier.win_x64)
+            .SetConfiguration(Configuration)));
+
+    [Secret, Parameter("Private Access Token for publishing Nuget packages to GitHub")]
+    string GithubNugetPAT;
+    
+    Target Publish => _ => _
+        .OnlyWhenStatic(() => GitRepository.IsOnMainBranch())
+        .DependsOn(Pack)
         .Executes(() =>
         {
-            DotNetTasks.DotNetPublish(options => options
-                .SetProject(Solution.Tests.TestTarget)
-                .SetRuntime(DotNetRuntimeIdentifier.win_x64)
-                .SetConfiguration(Configuration));
-        });
+            if (string.IsNullOrWhiteSpace(GithubNugetPAT))
+                GithubNugetPAT = GitHubActions.Instance.Token;
+            var source = $"https://nuget.pkg.github.com/{GitRepository.GetGitHubOwner()}/index.json";
 
+            var preExisting = true;
+            if (!NuGetSourcesList().Any(x => x.Text.Contains("github")))
+            {
+                preExisting = false;
+                NuGetSourcesAdd(options => options
+                    .SetName("github")
+                    .SetUserName(GitRepository.GetGitHubOwner())
+                    .SetPassword(GithubNugetPAT)
+                    .SetSource(source));
+            }
+
+            NuGetPush(options => options
+                .SetApiKey(GithubNugetPAT)
+                .SetSource(source)
+                .SetTargetPath((PackagesDirectory / "*.nupkg").GlobFiles().First()));
+
+            if (!preExisting)
+                NuGetSourcesRemove(options => options
+                    .SetName("github"));
+        });
     
     
     // Paths
