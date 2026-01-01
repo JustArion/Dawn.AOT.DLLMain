@@ -4,6 +4,7 @@ using System.Linq;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.Tools.GitHub;
+using Serilog;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
 
@@ -18,13 +19,22 @@ using static Nuke.Common.Tools.NuGet.NuGetTasks;
         GitHubActionsTrigger.WorkflowDispatch, 
         GitHubActionsTrigger.PullRequest
     ]),
-    GitHubActions("deploy", GitHubActionsImage.WindowsLatest,
+    GitHubActions("manual_deploy", GitHubActionsImage.WindowsLatest,
     InvokedTargets = [nameof(Publish)],
     AutoGenerate = true,
     PublishArtifacts = true,
     ReadPermissions = [GitHubActionsPermissions.Contents],
     WritePermissions = [GitHubActionsPermissions.Packages],
-    OnPushTags = ["v*"])
+    EnableGitHubToken = true,
+    OnWorkflowDispatchRequiredInputs = ["version"]),
+    GitHubActions("deploy", GitHubActionsImage.WindowsLatest,
+        InvokedTargets = [nameof(Publish)],
+        AutoGenerate = true,
+        PublishArtifacts = true,
+        ReadPermissions = [GitHubActionsPermissions.Contents],
+        WritePermissions = [GitHubActionsPermissions.Packages],
+        EnableGitHubToken = true,
+        OnPushTags = ["v*"])
 ]
 class Build : NukeBuild
 {
@@ -83,6 +93,8 @@ class Build : NukeBuild
         {
             if (string.IsNullOrWhiteSpace(GithubNugetPAT))
                 GithubNugetPAT = GitHubActions.Instance.Token;
+            
+            GithubNugetPAT.NotNullOrWhiteSpace();
             var source = $"https://nuget.pkg.github.com/{GitRepository.GetGitHubOwner()}/index.json";
 
             var preExisting = true;

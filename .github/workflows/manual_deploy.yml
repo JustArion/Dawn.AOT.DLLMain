@@ -9,17 +9,19 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_deploy --host GitHubActions
+#         nuke --generate-configuration GitHubActions_manual_deploy --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: deploy
+name: manual_deploy
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "version"
+        required: true
 
 permissions:
   packages: write
@@ -41,6 +43,7 @@ jobs:
       - name: 'Run: Publish'
         run: ./build.cmd Publish
         env:
+          version: ${{ github.event.inputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish: packages'
         uses: actions/upload-artifact@v5
