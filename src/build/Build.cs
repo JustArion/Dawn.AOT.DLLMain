@@ -87,7 +87,11 @@ class Build : NukeBuild
     string GithubNugetPAT;
     
     Target Publish => _ => _
-        .OnlyWhenStatic(() => GitRepository.IsOnMainBranch())
+        .OnlyWhenStatic(() =>
+        {
+            Log.Information("We're currently on {Branch}", GitRepository.Branch);
+            return GitRepository.IsOnMainBranch();
+        })
         .DependsOn(Pack)
         .Executes(() =>
         {
