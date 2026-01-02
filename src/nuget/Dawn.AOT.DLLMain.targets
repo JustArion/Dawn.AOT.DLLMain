@@ -1,7 +1,5 @@
 <Project>
     <Target Name="RemoveDLLMainObject" AfterTargets="SetupOSSpecificProps" >
-        <Message Text="[Dawn.AOT.DLLMain] Removing .NET 10+ DLLMain Limitations!" Importance="high"/>
-        
         <PropertyGroup>
             <MicrosoftDLLMain>$(IlcSdkPath)dllmain$(ObjectSuffix)</MicrosoftDLLMain>
         </PropertyGroup>
