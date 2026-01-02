@@ -10,3 +10,5 @@ global using static Nuke.Common.IO.PathConstruction;
 global using Nuke.Common.CI.GitHubActions;
 global using Nuke.Common.Tools.DotNet;
 global using Nuke.Common.Tools.NuGet;
+global using static Nuke.Common.Tools.DotNet.DotNetTasks;
+global using static Nuke.Common.Tools.NuGet.NuGetTasks;
