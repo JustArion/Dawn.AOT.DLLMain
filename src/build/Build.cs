@@ -1,15 +1,9 @@
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Nuke.Common.Git;
-using Nuke.Common.IO;
 using Nuke.Common.Tools.GitHub;
-using Serilog;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.Tools.NuGet.NuGetTasks;
 
 [
-    ShutdownDotNetAfterServerBuild,
     GitHubActions("pack", GitHubActionsImage.WindowsLatest, 
     InvokedTargets = [nameof(Pack)],
     AutoGenerate = true,
@@ -38,8 +32,12 @@ using static Nuke.Common.Tools.NuGet.NuGetTasks;
 ]
 class Build : NukeBuild
 {
+    public static int Main () => Execute<Build>(x => x.Pack);
+    
     [GitRepository]
     readonly GitRepository GitRepository;
+
+    private string GetLatestTag() => GitRepository.Tags?.FirstOrDefault(t => t != null && t.StartsWith('v'))?.TrimStart('v');
     
     [Solution(GenerateProjects = true)] 
     readonly Solution Solution;
@@ -47,8 +45,6 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
     
-    public static int Main () => Execute<Build>(x => x.Pack);
-
     Target Clean => _ => _
         .Executes(() =>
         {
@@ -57,20 +53,23 @@ class Build : NukeBuild
 
     [Parameter] 
     string Version;
+
+    [UsedImplicitly]
+    Target PrepareVersion => _ => _
+        .Before(Pack)
+        .Unlisted()
+        .OnlyWhenStatic(() => IsServerBuild)
+        .Executes(() => Version = GetLatestTag());
     
     Target Pack => _ => _
         .DependsOn(Test)
         .Produces(PackagesDirectory / "*.nupkg")
         .Executes(() =>
         {
-            var version = Version
-                          ?? GitRepository.Tags?.FirstOrDefault(t => t != null && t.StartsWith('v'))?.TrimStart('v');
-            
-            if (version == null)
-                Assert.Fail("Could not find a version specified for this release");
+            Version.NotNullOrWhiteSpace("Version must be provided (use --version)");
             
             return NuGetPack(options => options
-                .SetVersion(version)
+                .SetVersion(Version)
                 .SetProcessWorkingDirectory(NugetDirectory)
                 .SetOutputDirectory(PackagesDirectory));
         });
@@ -83,7 +82,7 @@ class Build : NukeBuild
             .SetRuntime(DotNetRuntimeIdentifier.win_x64)
             .SetConfiguration(Configuration)));
 
-    [Secret, Parameter("Private Access Token for publishing Nuget packages to GitHub")]
+    [Secret, Optional, Parameter("Private Access Token for publishing Nuget packages to GitHub")]
     string GithubNugetPAT;
     
     Target Publish => _ => _
