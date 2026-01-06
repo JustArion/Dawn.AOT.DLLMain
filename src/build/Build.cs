@@ -4,7 +4,7 @@ using Nuke.Common.Git;
 using Nuke.Common.Tools.GitHub;
 
 [
-    GitHubActions("pack", GitHubActionsImage.WindowsLatest, 
+    GitHubActions("build", GitHubActionsImage.WindowsLatest, 
     InvokedTargets = [nameof(Pack)],
     AutoGenerate = true,
     PublishArtifacts = true,
