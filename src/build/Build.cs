@@ -1,7 +1,10 @@
+using System;
 using System.Linq;
+using Extensions;
 using JetBrains.Annotations;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.GitHub;
+using Octokit;
 
 [
     GitHubActions("build", GitHubActionsImage.WindowsLatest, 
@@ -33,7 +36,8 @@ class Build : NukeBuild
     [GitRepository]
     readonly GitRepository GitRepository;
 
-    private string GetLatestTag() => GitRepository.Tags?.FirstOrDefault(t => t != null && t.StartsWith('v'))?.TrimStart('v');
+    private static readonly Func<string, bool> _versionPredicate = s => s.StartsWith('v'); 
+    private string GetLatestTag() => (GitRepository.Tags?.FirstOrDefault(_versionPredicate) ?? GitRepository.GetTag(_versionPredicate)).TrimStart('v');
     
     [Solution(GenerateProjects = true)] 
     readonly Solution Solution;

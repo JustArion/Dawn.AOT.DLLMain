@@ -12,3 +12,4 @@ global using Nuke.Common.Tools.DotNet;
 global using Nuke.Common.Tools.NuGet;
 global using static Nuke.Common.Tools.DotNet.DotNetTasks;
 global using static Nuke.Common.Tools.NuGet.NuGetTasks;
+global using static Nuke.Common.Tools.Git.GitTasks;
