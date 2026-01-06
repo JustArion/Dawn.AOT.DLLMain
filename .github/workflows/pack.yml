@@ -19,8 +19,8 @@ name: pack
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "version"
+      Version:
+        description: "Version"
         required: true
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
       - name: 'Run: Pack'
         run: ./build.cmd Pack
         env:
-          version: ${{ github.event.inputs.version }}
+          Version: ${{ github.event.inputs.Version }}
       - name: 'Publish: packages'
         uses: actions/upload-artifact@v5
         with:

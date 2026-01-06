@@ -19,8 +19,8 @@ name: manual_deploy
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "version"
+      Version:
+        description: "Version"
         required: true
 
 permissions:
@@ -43,7 +43,7 @@ jobs:
       - name: 'Run: Publish'
         run: ./build.cmd Publish
         env:
-          version: ${{ github.event.inputs.version }}
+          Version: ${{ github.event.inputs.Version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish: packages'
         uses: actions/upload-artifact@v5
