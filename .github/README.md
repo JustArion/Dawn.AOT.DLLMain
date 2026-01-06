@@ -13,14 +13,18 @@ Here are some resources that may come in handy!
 
 Basically the package is adding [these](../src/nuget/Dawn.AOT.DLLMain.targets) targets to your .csproj
 ```xml
-<Target Name="RemoveDLLMainObject" AfterTargets="SetupOSSpecificProps">
+<Target Name="RemoveDLLMainObjects" AfterTargets="SetupOSSpecificProps">
     <PropertyGroup>
-        <MicrosoftDLLMain>$(IlcSdkPath)dllmain$(ObjectSuffix)</MicrosoftDLLMain>
+        <MicrosoftDllMain>$(IlcSdkPath)dllmain$(ObjectSuffix)</MicrosoftDllMain>
+        <MicrosoftDllMainGuardCF>$(IlcSdkPath)dllmain.GuardCF$(ObjectSuffix)</MicrosoftDllMainGuardCF>
+        <EnableControlFlowGuard>false</EnableControlFlowGuard>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(_targetOS)' == 'win'">
-        <LinkerArg Remove="&quot;$(MicrosoftDLLMain)&quot;"/>
+        <LinkerArg Remove="&quot;$(MicrosoftDllMain)&quot;"/>
+        <LinkerArg Remove="&quot;$(MicrosoftDllMainGuardCF)&quot;"/>
+        <NativeLibrary Remove="$(MicrosoftDllMain)"/>
+        <NativeLibrary Remove="$(MicrosoftDllMainGuardCF)"/>
     </ItemGroup>
-
 </Target>
 ```
