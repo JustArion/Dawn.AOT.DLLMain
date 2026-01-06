@@ -8,11 +8,7 @@ using Nuke.Common.Tools.GitHub;
     InvokedTargets = [nameof(Pack)],
     AutoGenerate = true,
     PublishArtifacts = true,
-    On = 
-    [
-        GitHubActionsTrigger.WorkflowDispatch, 
-        GitHubActionsTrigger.PullRequest
-    ]),
+    OnWorkflowDispatchRequiredInputs = ["version"]),
     GitHubActions("manual_deploy", GitHubActionsImage.WindowsLatest,
     InvokedTargets = [nameof(Publish)],
     AutoGenerate = true,

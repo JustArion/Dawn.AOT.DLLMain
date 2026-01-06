@@ -16,7 +16,12 @@
 
 name: pack
 
-on: [workflow_dispatch, pull_request]
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "version"
+        required: true
 
 jobs:
   windows-latest:
@@ -33,6 +38,8 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
       - name: 'Run: Pack'
         run: ./build.cmd Pack
+        env:
+          version: ${{ github.event.inputs.version }}
       - name: 'Publish: packages'
         uses: actions/upload-artifact@v5
         with:
