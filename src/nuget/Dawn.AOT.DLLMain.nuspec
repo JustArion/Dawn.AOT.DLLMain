@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Dawn.AOT.DLLMain</id>
-        <title>Dawn AOT DLLMain</title>
+        <title>DllMain</title>
         <!-- Nuke will replace this -->
         <version>0.0.0</version>
         <description>Removes the limitations placed on DllMain from .NET 10+</description>
@@ -11,12 +11,16 @@
 
         <license type="expression">MIT</license>
         <repository type="git" url="https://github.com/JustArion/Dawn.AOT.DLLMain.git"/>
-        <tags>aot;dllmain;clr</tags>
+        <projectUrl>https://github.com/JustArion/Dawn.AOT.DLLMain</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <language>en-US</language>
+        <summary>.NET 10 removed the ability to export DllMain as an entrypoint. This package brings the ability back</summary>
+        
+        <tags>aot dllmain clr</tags>
     </metadata>
 
     <files>
-        <file src="Dawn.AOT.DLLMain.targets" target="build\" />
+        <file src="Dawn.AOT.DLLMain.targets" target="build\"/>
+        <file src="../../.github/readme.md" target="docs\"/>
     </files>
 </package>
