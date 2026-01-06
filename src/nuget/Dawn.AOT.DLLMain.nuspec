@@ -15,7 +15,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <language>en-US</language>
         <summary>.NET 10 removed the ability to export DllMain as an entrypoint. This package brings the ability back</summary>
-        
+        <readme>docs\README.md</readme>
         <tags>aot dllmain clr</tags>
     </metadata>
 
