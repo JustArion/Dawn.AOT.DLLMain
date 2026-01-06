@@ -1,8 +1,8 @@
 > [!WARNING]
-> This feature is [officially](https://github.com/dotnet/runtime/pull/109699) unsupported by .NET!<br/>
+> This feature is [officially](https://github.com/dotnet/runtime/pull/109699) unsupported by .NET!
 > Doing so; you accept full responsibility for all side-effects that may happen.
 
-That being said, lets get into it!<br/>
+That being said, lets get into it!
 Here are some resources that may come in handy!
 - [DllMain entry point](https://learn.microsoft.com/en-us/windows/win32/dlls/dllmain)
 - [Best Practices](https://learn.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-best-practices)
@@ -13,7 +13,7 @@ Here are some resources that may come in handy!
 
 Basically the package is adding [these](../src/nuget/Dawn.AOT.DLLMain.targets) targets to your .csproj
 ```xml
-<Target Name="RemoveDLLMainObject" AfterTargets="SetupOSSpecificProps" >
+<Target Name="RemoveDLLMainObject" AfterTargets="SetupOSSpecificProps">
     <PropertyGroup>
         <MicrosoftDLLMain>$(IlcSdkPath)dllmain$(ObjectSuffix)</MicrosoftDLLMain>
     </PropertyGroup>
