@@ -10,7 +10,7 @@
         <owners>arion</owners>
 
         <license type="expression">MIT</license>
-        <repository type="git" url="https://github.com/JustArion/Dawn.AOT.DLLMain.git"/>
+        <repository type="git" url="https://github.com/JustArion/Dawn.AOT.DLLMain"/>
         <projectUrl>https://github.com/JustArion/Dawn.AOT.DLLMain</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <language>en-US</language>
@@ -21,6 +21,6 @@
 
     <files>
         <file src="Dawn.AOT.DLLMain.targets" target="build\"/>
-        <file src="../../.github/readme.md" target="docs\"/>
+        <file src="../../.github/README.md" target="docs\"/>
     </files>
 </package>
