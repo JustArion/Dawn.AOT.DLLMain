@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Extensions;
 using JetBrains.Annotations;
@@ -76,11 +77,26 @@ class Build : NukeBuild
 
     Target Test => _ => _
         .OnlyWhenStatic(()=> IsWin)
-        .Executes(() => 
+        .Executes(() =>
+        {
+            var dir = Directory.CreateTempSubdirectory();
+            
             DotNetPublish(options => options
-            .SetProject(Solution.Tests.TestTarget)
-            .SetRuntime(DotNetRuntimeIdentifier.win_x64)
-            .SetConfiguration(Configuration)));
+                .SetProject(Solution.Tests.TestTarget)
+                .SetRuntime(DotNetRuntimeIdentifier.win_x64)
+                .SetOutput(dir.FullName)
+                .SetConfiguration(Configuration));
+
+            // We should only test on non-C# dlls for running, since running DllMain with a C# export in .NET 10 doesn't work
+
+            // var dll = dir.GetFiles("*.dll").First();
+
+            // var proc = ProcessTasks.StartProcess("rundll32", $"{dll.Name},DllMain", timeout: (int)TimeSpan.FromSeconds(5).TotalMilliseconds, workingDirectory: dir.FullName);
+
+            // proc.AssertZeroExitCode();
+
+            // Assert.True(proc.Output.Any(x => x.Text.Contains("DllMain ran!")));
+        });
 
     [Secret, Optional, Parameter("Private Access Token for publishing Nuget packages to GitHub")]
     string GithubNugetPAT;
