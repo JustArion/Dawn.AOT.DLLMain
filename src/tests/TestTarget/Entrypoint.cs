@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace TestTarget;
@@ -9,7 +10,6 @@ internal static class Entrypoint
     [UnmanagedCallersOnly(EntryPoint = nameof(DllMain), CallConvs = [typeof(CallConvStdcall)])]
     internal static bool DllMain(nint hinstDLL, int fdwReason, nint lpvReserved)
     {
-        // C# doesn't support unloading
-        return true;
+        throw new UnreachableException(nameof(DllMain));
     }
 }
