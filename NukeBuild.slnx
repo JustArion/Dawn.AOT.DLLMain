@@ -1,4 +1,7 @@
 ﻿<Solution>
+  <Folder Name="/Docs/">
+    <File Path=".github/README.md" />
+  </Folder>
   <Folder Name="/Nuget/">
     <File Path="src/nuget/Dawn.AOT.DLLMain.nuspec" />
     <File Path="src/nuget/Dawn.AOT.DLLMain.targets" />
